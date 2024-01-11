@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/brickpeas/spaceape-carbon/flight"
 
+	flags "github.com/brickpeas/spaceape-carbon/pkg/flags"
 	client "github.com/brickpeas/spaceape-carbon/pkg/http"
 )
 
@@ -25,7 +25,7 @@ func main() {
 
 	flag.Parse()
 
-	parsedLegs, err := parseLegsFlag(legsInput)
+	parsedLegs, err := flags.ParseLegsFlag(legsInput)
 	if err != nil {
 		log.Fatalf("error parsing flags: %v", err)
 	}
@@ -54,43 +54,9 @@ func main() {
 
 	// Print the emissions for each flight.
 	for _, leg := range emissions.Data.Attributes.Legs {
-		fmt.Printf("Flight from %s to %s:\n %+v", leg.DepartureAirport, leg.DestinationAirport, emissions.Data.Attributes)
+		fmt.Printf("Flight from %s to %s:\n %+v\n", leg.DepartureAirport, leg.DestinationAirport, emissions.Data.Attributes)
 	}
 
 	// Print the total emissions for all flights.
-	fmt.Printf("Total emissions: %d", emissions.Data.Attributes.CarbonG)
-}
-
-func parseLegsFlag(legsInput string) ([]flight.Leg, error) {
-	var cabinClass = "economy"
-	var legs []flight.Leg
-
-	individualLegs := strings.Split(legsInput, ",")
-
-	for _, leg := range individualLegs {
-		legValues := strings.Split(leg, "-")
-		if len(legValues) != 3 {
-			return nil, fmt.Errorf("invalid leg: %s", leg)
-		}
-
-		if len(legValues[0]) != 3 || len(legValues[1]) != 3 {
-			return nil, fmt.Errorf("invalid IATA code: %v", leg)
-		}
-
-		if legValues[2] != "e" && legValues[2] != "p" {
-			return nil, fmt.Errorf("invalid cabin class: %v", leg[2])
-		}
-
-		if legValues[2] == "p" {
-			cabinClass = "premium"
-		}
-
-		legs = append(legs, flight.Leg{
-			DepartureAirport: legValues[0],
-			ArrivalAirport:   legValues[1],
-			CabinClass:       cabinClass,
-		})
-	}
-
-	return legs, nil
+	fmt.Printf("Total emissions:\n %+v", emissions.Data)
 }
