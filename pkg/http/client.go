@@ -18,12 +18,14 @@ const (
 	defaultTimeout = time.Second * 10
 )
 
+// Client is the client for the CarbonInterface API.
 type Client struct {
 	apiKey     string
 	baseURL    string
 	httpClient *http.Client
 }
 
+// ClientOptions are a set of overrides used when creating a new Client.
 type ClientOptions struct {
 	// APIKey required. Generated at https://www.carboninterface.com/account/api_credentials.
 	APIKey string
@@ -48,6 +50,7 @@ func NewClient(options *ClientOptions) (*Client, error) {
 	return client, nil
 }
 
+// GetEmissions makes a request to the CarbonInterface estimates API.
 func (c *Client) GetEmissions(emissionsOpts flight.EmissionsOptions) (*api.EmissionsResponse, error) {
 	emissionsJSON, err := json.Marshal(emissionsOpts)
 	if err != nil {
@@ -61,6 +64,7 @@ func (c *Client) GetEmissions(emissionsOpts flight.EmissionsOptions) (*api.Emiss
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
+	// Set our API key and content type headers.
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", c.apiKey))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -69,6 +73,7 @@ func (c *Client) GetEmissions(emissionsOpts flight.EmissionsOptions) (*api.Emiss
 		return nil, fmt.Errorf("error making request: %w", err)
 	}
 
+	// Check for non 2XX response codes and return CarbonInterface API to user.
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		errBody, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -85,6 +90,7 @@ func (c *Client) GetEmissions(emissionsOpts flight.EmissionsOptions) (*api.Emiss
 		return nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
+	// Check for empty response body.
 	if len(body) == 0 {
 		return nil, fmt.Errorf("empty response body")
 	}
@@ -94,6 +100,7 @@ func (c *Client) GetEmissions(emissionsOpts flight.EmissionsOptions) (*api.Emiss
 		return nil, fmt.Errorf("error unmarshalling response body: %w", err)
 	}
 
+	// Check for nil response.
 	if emissionsResponse == nil {
 		return nil, fmt.Errorf("nil response after unmarshalling")
 	}

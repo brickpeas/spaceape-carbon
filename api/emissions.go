@@ -2,6 +2,7 @@ package api
 
 import "time"
 
+// EmissionsResponse is the response from the CarbonInterface estimates API.
 type EmissionsResponse struct {
 	Data struct {
 		ID         string              `json:"id"`
@@ -10,6 +11,7 @@ type EmissionsResponse struct {
 	} `json:"data"`
 }
 
+// EmissionsAttributes are the attributes of the EmissionsResponse.
 type EmissionsAttributes struct {
 	Passengers    int            `json:"passengers"`
 	Legs          []EmissionsLeg `json:"legs"`
@@ -22,6 +24,7 @@ type EmissionsAttributes struct {
 	CarbonMt      float64        `json:"carbon_mt"`
 }
 
+// EmissionsLeg is a single leg of a flight.
 type EmissionsLeg struct {
 	DepartureAirport   string `json:"departure_airport"`
 	DestinationAirport string `json:"destination_airport"`
