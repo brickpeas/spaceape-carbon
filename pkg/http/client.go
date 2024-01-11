@@ -69,6 +69,15 @@ func (c *Client) GetEmissions(emissionsOpts flight.EmissionsOptions) (*api.Emiss
 		return nil, fmt.Errorf("error making request: %w", err)
 	}
 
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		errBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("error reading response body: %w", err)
+		}
+
+		return nil, fmt.Errorf("non 2XX response code received: '%v' with error: '%s'", resp.StatusCode, string(errBody))
+	}
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
