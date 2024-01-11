@@ -2,13 +2,14 @@ package flags
 
 import (
 	"fmt"
-	"github.com/brickpeas/spaceape-carbon/flight"
 	"strings"
+
+	"github.com/brickpeas/spaceape-carbon/flight"
 )
 
-func ParseLegsFlag(legsInput string) ([]flight.Leg, error) {
+func ParseLegsFlag(legsInput string) ([]flight.LegOption, error) {
 	var cabinClass = "economy"
-	var legs []flight.Leg
+	var legs []flight.LegOption
 
 	individualLegs := strings.Split(legsInput, ",")
 
@@ -30,7 +31,7 @@ func ParseLegsFlag(legsInput string) ([]flight.Leg, error) {
 			cabinClass = "premium"
 		}
 
-		legs = append(legs, flight.Leg{
+		legs = append(legs, flight.LegOption{
 			DepartureAirport: legValues[0],
 			ArrivalAirport:   legValues[1],
 			CabinClass:       cabinClass,

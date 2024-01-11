@@ -27,10 +27,6 @@ type Client struct {
 type ClientOptions struct {
 	// APIKey required. Generated at https://www.carboninterface.com/account/api_credentials.
 	APIKey string
-	// BaseURL for the CarbonInterface API. This will default to.
-	BaseURL string
-	// Timeout for the http client. If none provided default timeout is 10s.
-	Timeout time.Duration
 	// HTTPClient can be used to set a custom HTTP client on the CarbonInterface client.
 	HTTPClient *http.Client
 }
@@ -47,14 +43,6 @@ func NewClient(options *ClientOptions) (*Client, error) {
 		httpClient: &http.Client{
 			Timeout: defaultTimeout,
 		},
-	}
-
-	if options.BaseURL != "" {
-		client.baseURL = options.BaseURL
-	}
-
-	if options.HTTPClient != nil {
-		client.httpClient = options.HTTPClient
 	}
 
 	return client, nil
@@ -88,9 +76,17 @@ func (c *Client) GetEmissions(emissionsOpts flight.EmissionsOptions) (*api.Emiss
 		return nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
+	if len(body) == 0 {
+		return nil, fmt.Errorf("empty response body")
+	}
+
 	var emissionsResponse *api.EmissionsResponse
 	if err := json.Unmarshal(body, &emissionsResponse); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response body: %w", err)
+	}
+
+	if emissionsResponse == nil {
+		return nil, fmt.Errorf("nil response after unmarshalling")
 	}
 
 	return emissionsResponse, nil

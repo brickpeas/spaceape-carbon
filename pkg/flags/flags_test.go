@@ -1,9 +1,10 @@
 package flags
 
 import (
+	"testing"
+
 	"github.com/brickpeas/spaceape-carbon/flight"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestParseLegsFlag(t *testing.T) {
@@ -31,7 +32,7 @@ func TestParseLegsFlag(t *testing.T) {
 
 		leg, err := ParseLegsFlag("LHR-JFK-e")
 
-		expectedLeg := []flight.Leg{
+		expectedLeg := []flight.LegOption{
 			{
 				DepartureAirport: "LHR",
 				ArrivalAirport:   "JFK",
@@ -46,7 +47,7 @@ func TestParseLegsFlag(t *testing.T) {
 
 		leg, err := ParseLegsFlag("LHR-JFK-e,JFK-CDG-e,CDG-LHR-p")
 
-		expectedLegs := []flight.Leg{
+		expectedLegs := []flight.LegOption{
 			{
 				DepartureAirport: "LHR",
 				ArrivalAirport:   "JFK",

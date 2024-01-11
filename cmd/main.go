@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -18,7 +19,7 @@ func main() {
 
 	//	Define our command line flags.
 	var legsInput string
-	flag.StringVar(&legsInput, "flight", "LHR-JFK-e", "Define your legs using IATA airport codes in the following format: LHR-JFK-e,JFK-CDG-p. The first code is the deparation airport, the second is the arrival airport and third represents cabin class, e=economy, p=premimum. Flight codes can be found here: https://www.iata.org/en/publications/directories/code-search/.")
+	flag.StringVar(&legsInput, "flight", "LHR-JFK-e,JFK-CDG-e,CDG-LHR-p", "Define your legs using IATA airport codes in the following format: LHR-JFK-e,JFK-CDG-p. The first code is the deparation airport, the second is the arrival airport and third represents cabin class, e=economy, p=premimum. Flight codes can be found here: https://www.iata.org/en/publications/directories/code-search/.")
 
 	noOfPassengers := flag.String("passengers", "1", "Number of passengers")
 	distanceUnit := flag.String("units", "km", "Distance unit")
@@ -52,11 +53,6 @@ func main() {
 		log.Fatalf("error getting emissions: %v", err)
 	}
 
-	// Print the emissions for each flight.
-	for _, leg := range emissions.Data.Attributes.Legs {
-		fmt.Printf("Flight from %s to %s:\n %+v\n", leg.DepartureAirport, leg.DestinationAirport, emissions.Data.Attributes)
-	}
-
-	// Print the total emissions for all flights.
-	fmt.Printf("Total emissions:\n %+v", emissions.Data)
+	str, _ := json.MarshalIndent(emissions, "", " ")
+	fmt.Println(string(str))
 }
